@@ -1,0 +1,12 @@
+.modal{
+    display: none;
+}
+.modal.show{
+    display: block;
+}
+.table-block{
+    padding: 15px;
+    background: red;
+    color: white;
+    margin-bottom: 15px;
+}

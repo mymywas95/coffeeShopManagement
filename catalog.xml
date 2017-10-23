@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/ListProductSchema.xsd" uri="src/conf/xml-resources/jaxb/Listcategory/ListProductSchema.xsd"/>
+</catalog>

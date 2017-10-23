@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://www.co.com.vn" uri="www.co.com.vn"/>
+    <system systemId="http://www.coffee.com.vn" uri="www.coffee.com.vn"/>
+</catalog>
