@@ -9,6 +9,8 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -26,11 +28,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "BillItem.findAll", query = "SELECT b FROM BillItem b"),
     @NamedQuery(name = "BillItem.findById", query = "SELECT b FROM BillItem b WHERE b.id = :id"),
     @NamedQuery(name = "BillItem.findByBillId", query = "SELECT b FROM BillItem b WHERE b.billId = :billId"),
-    @NamedQuery(name = "BillItem.findByProductId", query = "SELECT b FROM BillItem b WHERE b.productId = :productId")})
+    @NamedQuery(name = "BillItem.findByProductId", query = "SELECT b FROM BillItem b WHERE b.productId = :productId"),
+    @NamedQuery(name = "BillItem.findByQuantity", query = "SELECT b FROM BillItem b WHERE b.quantity = :quantity")})
 public class BillItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
     private Integer id;
@@ -40,6 +44,9 @@ public class BillItem implements Serializable {
     @Basic(optional = false)
     @Column(name = "productId", nullable = false)
     private int productId;
+    @Basic(optional = false)
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
 
     public BillItem() {
     }
@@ -48,10 +55,11 @@ public class BillItem implements Serializable {
         this.id = id;
     }
 
-    public BillItem(Integer id, int billId, int productId) {
+    public BillItem(Integer id, int billId, int productId, int quantity) {
         this.id = id;
         this.billId = billId;
         this.productId = productId;
+        this.quantity = quantity;
     }
 
     public Integer getId() {
@@ -76,6 +84,14 @@ public class BillItem implements Serializable {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     @Override

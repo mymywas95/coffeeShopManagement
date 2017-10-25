@@ -24,7 +24,7 @@
                             <c:forEach var="productItem" items="${products.listProductItemDto}" >
                                 <td>${productItem.price}</td>
                                 <td><input type="radio" name="${products.id}" 
-                                           onclick="addItemToMenu(this, '${AllMenuItem.categoryName}', '${products.name}', '${productItem.price}')"></td>
+                                           onclick="addItemToMenu(this, '${AllMenuItem.categoryName}', '${products.id}','${products.name}', '${productItem.price}')"></td>
                                 </c:forEach>
                         </tr>
                     </c:forEach>

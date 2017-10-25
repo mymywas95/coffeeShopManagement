@@ -10,6 +10,8 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -28,7 +30,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Bill.findAll", query = "SELECT b FROM Bill b"),
     @NamedQuery(name = "Bill.findById", query = "SELECT b FROM Bill b WHERE b.id = :id"),
-    @NamedQuery(name = "Bill.findByProductId", query = "SELECT b FROM Bill b WHERE b.productId = :productId"),
     @NamedQuery(name = "Bill.findByPaymentDate", query = "SELECT b FROM Bill b WHERE b.paymentDate = :paymentDate"),
     @NamedQuery(name = "Bill.findByTableName", query = "SELECT b FROM Bill b WHERE b.tableName = :tableName"),
     @NamedQuery(name = "Bill.findByTotal", query = "SELECT b FROM Bill b WHERE b.total = :total"),
@@ -38,12 +39,10 @@ public class Bill implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
     private Integer id;
-    @Basic(optional = false)
-    @Column(name = "productId", nullable = false)
-    private int productId;
     @Basic(optional = false)
     @Column(name = "paymentDate", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -66,9 +65,8 @@ public class Bill implements Serializable {
         this.id = id;
     }
 
-    public Bill(Integer id, int productId, Date paymentDate, String tableName, double total) {
+    public Bill(Integer id, Date paymentDate, String tableName, double total) {
         this.id = id;
-        this.productId = productId;
         this.paymentDate = paymentDate;
         this.tableName = tableName;
         this.total = total;
@@ -80,14 +78,6 @@ public class Bill implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
     }
 
     public Date getPaymentDate() {

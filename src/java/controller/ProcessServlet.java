@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import service.ManageConstantService;
 
 /**
  *
@@ -21,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "ProcessServlet", urlPatterns = {"/ProcessServlet"})
 public class ProcessServlet extends HttpServlet {
 
-    private final String index = "index.html";
-    private final String getMenuServlet = "getMenuServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,11 +38,11 @@ public class ProcessServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             String button = request.getParameter("btnAction");
-            String url = index;
+            String url = ManageConstantService.indexPage;
             if(button == null){
                 
             }else{
-                url = getMenuServlet;
+                url = ManageConstantService.getMenuServlet;
             }
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

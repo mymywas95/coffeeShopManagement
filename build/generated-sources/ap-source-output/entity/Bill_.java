@@ -5,7 +5,7 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-10-23T14:28:00")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-10-25T23:04:06")
 @StaticMetamodel(Bill.class)
 public class Bill_ { 
 
@@ -15,6 +15,5 @@ public class Bill_ {
     public static volatile SingularAttribute<Bill, String> tableName;
     public static volatile SingularAttribute<Bill, Integer> promotion;
     public static volatile SingularAttribute<Bill, String> note;
-    public static volatile SingularAttribute<Bill, Integer> productId;
 
 }

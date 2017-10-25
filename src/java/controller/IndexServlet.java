@@ -1,4 +1,3 @@
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -6,26 +5,24 @@
  */
 package controller;
 
-import DTO.MenuDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import service.MenuService;
+import service.IndexService;
+import service.ManageConstantService;
 
 /**
  *
  * @author MYNVTSE61526
  */
-@WebServlet(name = "getMenuServlet", urlPatterns = {"/getMenuServlet"})
-public class getMenuServlet extends HttpServlet {
-    private MenuService menuService;
-    private final String Menu = "menu.jsp";
+@WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
+public class IndexServlet extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,13 +36,22 @@ public class getMenuServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            menuService = new MenuService();
-           List<MenuDTO> listmMenuDTO =  menuService.getAllMenuItem();
-           request.setAttribute("ListAllMenuItem", listmMenuDTO);
-            RequestDispatcher rd = request.getRequestDispatcher(Menu);
+            IndexService indexService = new IndexService();
+            int checkdResult = indexService.checkDataBeforeLoad();
+            String url = "";
+
+            if (checkdResult == 0) {
+                //            producListMarshaled file not found
+                url = ManageConstantService.getMenuServlet;
+            } else if (checkdResult == 1) {
+                //            success
+                url = ManageConstantService.indexPage;
+            } else if (checkdResult == 2) {
+                //            fail
+                url = ManageConstantService.maintenancePage;
+            }
+            RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
-        }catch(Exception e){
-            e.printStackTrace();
         }
     }
 

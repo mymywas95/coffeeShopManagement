@@ -1,3 +1,72 @@
+body{
+    margin: 0;
+}
+.header-lock{
+    background: #562C22;
+    color: white;
+    position: fixed;
+    width: 100%;
+    top: 0;
+}
+.header-lock .header-item{
+    width: 100%;
+    float: left;
+}
+.user-information-block .user-img img{
+    width: 25px;
+    vertical-align: middle;
+}
+.logo-img{
+    height: 35px;
+    padding-left: 5px
+}
+.information-block{
+    padding-right: 10px
+}
+.logo-img img{
+    height: 35px;
+    vertical-align: middle;
+}
+.header-item .logo-block, .header-item .user-information-block{
+    float: left;
+    width: 50%;
+    height: 35px;
+}
+.user-information-block .user-infor-item {
+    display: inline-block;
+    height: 35px;
+    vertical-align: middle;
+    line-height: 31px;
+}
+.user-information-block{
+    text-align: right;
+}
+.content-block{
+    margin-top: 50px;
+}
+.group-action-btn{
+    position: fixed;
+    width: 200px;
+    border: 1px solid black;
+    border-radius: 3px;
+    margin:0 10px;
+}
+.content-management-block{
+    min-height: 500px;
+    margin-left: 230px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+.table-management-block ul{
+    float: left;
+    width: 100%;
+}
+.table-management-block ul li{
+    float: left;
+    width: 25%;
+    list-style: none;
+    margin-bottom: 5px;
+}
 .modal{
     display: none;
 }
@@ -9,4 +78,8 @@
     background: red;
     color: white;
     margin-bottom: 15px;
+}
+#MenuModal .modal-body .menu-block, #MenuModal .modal-body .order-block{
+    float: left;
+    width: 50%;
 }
