@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>mymy</title>
+        <title>PhêCàPhê</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
@@ -19,7 +19,9 @@
             <div class="header-item">
                 <div class="logo-block">
                     <div class="logo-img">
-                        <img src="img/phecapheLogo.png" alt=""/>
+                        <a href="/coffeeShopManagement/">
+                            <img src="img/phecapheLogo.png" alt=""/>
+                        </a>
                     </div>
                 </div>
                 <div class="user-information-block">
@@ -39,111 +41,83 @@
             <div class="group-action-btn">
                 <div class="action-btn-block">
                     <div class="action-btn-item">
-                        <a class="btn btn-normal">Cập nhập menu</a>
+                        <a class="btn" onclick="addNewTable()">Thêm bàn</a>
+                    </div>
+                     <div class="action-btn-item">
+                        <a class="btn" href="/coffeeShopManagement/GetMenuServlet">In menu</a>
                     </div>
                     <div class="action-btn-item">
-                        <a class="btn btn-normal">Thêm bàn</a>
+                        <a class="btn" href="/coffeeShopManagement/GetMenuServlet">Cập nhập menu</a>
                     </div>
+                   
+
                 </div>
             </div>
             <div class="content-management-block">
                 <div class="table-management-block">
-                    <ul>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <div>
-                                    <div>bàn 1</div>
-                                    <div><span>Tổng: </span> <span>125k</span></div>
-                                </div>
-                            </a>
-                        </li>
+                    <ul class="list-table" id="listTable">
                     </ul>
                 </div>       
             </div>
         </div>
-        <!--        <form action="ProcessServlet" method="POST">
-                    <input type="submit" value="get menu" name="btnAction">
-                </form>-->
-        <div id="order"></div>
-        <div class="header-page">
-
-        </div>
-        <div>
-            <div class="table-block"  onclick="openMenuModal('MenuModal', 1)">table 1</div>
-            <div class="table-block"  onclick="openMenuModal('MenuModal', 2)">table 2</div>
-        </div>
-        <div id="demo">
-
-        </div>
     </body>
 </html>
+<script src="js/commonJS.js" type="text/javascript"></script>
 <script src="js/coffeeShopJs.js" type="text/javascript"></script>
 <div id="MenuModal" class="modal" >
-    <div>
-        Menu
-    </div>
-    <div class="modal-body">
-        <div class="menu-block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-item">
+                    <div class="modal-header-title">
+                        Order
+                    </div>
+                </div>
+                <div class="modal-header-item">
+                    <div class="modal-header-btn-close">
+                        <a class="btn btn-danger" onclick="openMenuModal('MenuModal', 1)"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="menu-block">
 
+                </div>
+                <div class="order-block">
+                    <div class="order-item-block-title">
+                        <ul>
+                            <li>Tên sản phẩm</li>
+                            <li>Số lượng</li>
+                            <li>Giá</li>
+                            <li>Thao tác</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
         </div>
-        <div class="order-block">
+    </div>
+</div>
+<div id="announceModal" class="modal" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-item">
+                    <div class="modal-header-title">
+                        Thông Báo
+                    </div>
+                </div>
+                <div class="modal-header-item">
+                    <div class="modal-header-btn-close">
+                        <a class="btn btn-danger" onclick="openModal('announceModal', '')"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="annouce-content" id="annouceContent">
 
+                </div>
+            </div>
         </div>
     </div>
 </div>

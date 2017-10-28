@@ -2,87 +2,31 @@ var s = {
     "menu": []
 };
 var o = {};
-function addItemToMenu(checkbox, categoryName, id, name, price) {
-    if (checkbox.checked == true)
-    {
-        if (s.menu.length == 0) {
-            addCateToMenu(categoryName, s.menu);
-            addProductToMenu(id, name, price, s.menu[0].productList);
+function onloadFunction() {
+    var menuStored = localStorage.getItem("myMenu");
+    if (typeof (menuStored) == "undefined" || menuStored == null) {
+        window.location.replace("http://localhost:8084/coffeeShopManagement/GetMenuServlet");
+    } else {
+        var orderStored = localStorage.getItem("order");
+        if (typeof (orderStored) == "undefined" || orderStored == null) {
+            addNewTable();
         } else {
-            var existCategory = false;
-            var existProduct = false;
-            for (var i = 0; i < s.menu.length; i++) {
-                if (categoryName == s.menu[i].CategoryName) {
-                    for (var j = 0; j < s.menu[i].productList.length; j++) {
-                        if (name == s.menu[i].productList[j].name) {
-                            s.menu[i].productList[j].price = price;
-                            existProduct = true;
-                            break;
-                        }
-                    }
-                    if (existProduct == true) {
-                        existCategory = true;
-                        break;
-                    }
-                    if (existProduct == false) {
-                        existCategory = true;
-                        addProductToMenu(id, name, price, s.menu[i].productList);
-                        break;
-                    }
-                }
-            }
-            if (existCategory == false) {
-                addCateToMenu(categoryName, s.menu);
-                addProductToMenu(id, name, price, s.menu[s.menu.length - 1].productList);
-            }
+            setMenuContent();
+            setTableList();
         }
     }
-    document.getElementById("menu").innerHTML = JSON.stringify(s);
 }
-function addCateToMenu(CateTitle, arr) {
-    arr.push({
-        "CategoryName": CateTitle,
-        "productList": []
-    })
-}
-function addProductToMenu(id, name, price, arr) {
-    arr.push({
-        "id": id,
-        "name": name,
-        "price": price
-    })
-}
-function saveToLocalStorage(selectedMenuContentId) {
-    localStorage.setItem("myMenu", JSON.stringify(s));
-    console.log(localStorage.getItem("myMenu"));
-}
-function hasClass(el, className) {
-    if (el.classList)
-        return el.classList.contains(className)
-    else
-        return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))
-}
-function addClass(el, className) {
-    if (el.classList)
-        el.classList.add(className)
-    else if (!hasClass(el, className))
-        el.className += " " + className
-}
-function removeClass(el, className) {
-    if (el.classList)
-        el.classList.remove(className)
-    else if (hasClass(el, className)) {
-        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
-        el.className = el.className.replace(reg, ' ')
-    }
-}
+
 function openMenuModal(id, tableId) {
+
     var el = document.getElementById(id);
     o = {};
     document.getElementById("tableId").value = tableId;
     var tableExist = false;
     if (hasClass(el, 'show')) {
+        setTableList();
         removeClass(el, 'show');
+        o = {};
     } else {
         var orderStored = localStorage.getItem("order");
         if (orderStored !== null && typeof (orderStored) !== "undefined") {
@@ -128,9 +72,6 @@ function openMenuModal(id, tableId) {
         addClass(el, 'show');
     }
 }
-function onloadFunction() {
-    setMenuContent();
-}
 function ChangeTableItem(id, name, price, quantity, btn) {
     debugger;
     var orderBlock = document.getElementsByClassName("order-block")[0];
@@ -160,11 +101,15 @@ function ChangeTableItem(id, name, price, quantity, btn) {
             if (quantity > 0) {
                 addProductToOrder(id, name, price, quantity, o.productList);
                 o.tableTotal = o.tableTotal + (price);
+            } else {
+                openModal("announceModal", "Không có sản phẩm này trong order");
+                setTimeout(function () {
+                    openModal("announceModal", "");
+                }, 1600);
             }
         }
     }
     setOrderContent(o, 0);
-    document.getElementById("order").innerHTML = JSON.stringify(o);
 }
 function addTableToOrder(tableId, total, arr) {
     arr.tableId = tableId;
@@ -178,6 +123,14 @@ function addProductToOrder(id, name, price, quantity, arr) {
         "name": name,
         "price": price,
         "quantity": quantity
+    })
+}
+function addNewTableToOrder(tableId, total, arr) {
+    arr.push({
+        "tableId": tableId,
+        "tableStatus": "Chưa thanh toán",
+        "tableTotal": 0,
+        "productList": []
     })
 }
 function setMenuContent() {
@@ -199,23 +152,28 @@ function setMenuContent() {
         for (var j = 0; j < menuContent.menu[i].productList.length; j++) {
             var productId = menuContent.menu[i].productList[j].id;
             var productName = menuContent.menu[i].productList[j].name;
-            var productPrice = menuContent.menu[i].productList[j].price;
+            var productPrice = menuContent.menu[i].productList[j].price + "";
             var productItemBlock = document.createElement("ul");
+            var productPriceSplited = productPrice.split(".");
+            var productPriceFormated = productPriceSplited[0] + "k";
             productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productName));
-            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productPrice));
+            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productPriceFormated));
             var lastChild = document.createElement("li");
             var btnAdd = document.createElement("a");
-            btnAdd.className += "btn btn-add";
+            btnAdd.className += "btn btn-normal btn-add";
             btnAdd.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + productPrice + ", 1, this)");
-            var btnAddText = document.createTextNode("Cộng");
+            var btnAddText = document.createElement("i");
+            btnAddText.className += "fa fa-plus";
             btnAdd.appendChild(btnAddText);
-            var btnMinus = document.createElement("a");
-            btnMinus.className += "btn btn-minus";
-            btnMinus.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + (-productPrice) + ", -1, this)");
-            var btnMinusText = document.createTextNode("Trừ");
-            btnMinus.appendChild(btnMinusText);
             lastChild.appendChild(btnAdd);
-            lastChild.appendChild(btnMinus);
+
+//            var btnMinus = document.createElement("a");
+//            btnMinus.className += "btn btn-minus";
+//            btnMinus.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + (-productPrice) + ", -1, this)");
+//            var btnMinusText = document.createElement("i");
+//            btnMinusText.className += "fa fa-minus";
+//            btnMinus.appendChild(btnMinusText);
+//            lastChild.appendChild(btnMinus);
             productItemBlock.appendChild(lastChild);
             productList.appendChild(productItemBlock);
         }
@@ -225,13 +183,81 @@ function setMenuContent() {
     }
     document.getElementsByClassName("modal-body")[0].appendChild(MenuBlock);
 }
+function setTableList() {
+    var myNodeListTable = document.getElementsByClassName("table-management-item");
+    if (typeof (myNodeListTable[0]) !== "undefined") {
+        while (myNodeListTable[0]) {
+            myNodeListTable[0].parentNode.removeChild(myNodeListTable[0]);
+        }
+    }
+    var orderStored = localStorage.getItem("order");
+    var orderContent = JSON.parse(orderStored);
+    var listTableBlock = document.getElementById("listTable");
+    for (var i = 0; i < orderContent.order.length; i++) {
+        var tableBlock = document.createElement("li");
+        tableBlock.className += "table-management-item";
+        var tableItemBlock = document.createElement("a");
+        tableItemBlock.className += "table-item-block";
+        tableItemBlock.setAttribute("onclick", "openMenuModal('MenuModal'," + orderContent.order[i].tableId + ")")
+
+        var tableItem = document.createElement("div");
+        tableItem.className += "table-item";
+        var tableName = document.createElement("div");
+        tableName.className += "table-name";
+        var tableProductItem = document.createElement("div");
+        tableProductItem.className += "table-product-item";
+
+        var tableTotal = document.createElement("div");
+        tableTotal.className += "table-total";
+        var tableTotalTitle = document.createElement("span");
+        var tableTotalDetail = document.createElement("span");
+        tableTotalDetail.className += "table-total-detail";
+        var payBtn = document.createElement("a");
+        payBtn.className += "btn btn-normal btn-payment";
+
+
+        if (orderContent.order[i].productList.length <= 0) {
+            tableItemBlock.className += " table-unresolve";
+            tableTotalTitle.appendChild(document.createTextNode("Tổng : "));
+            tableTotalDetail.appendChild(document.createTextNode("0"));
+            tableTotal.appendChild(tableTotalTitle);
+            tableTotal.appendChild(tableTotalDetail);
+        } else {
+            for (var j = 0; j < orderContent.order[i].productList.length; j++) {
+                var productBlock = document.createElement("ul");
+                var productName = document.createElement("li");
+                productName.appendChild(document.createTextNode(orderContent.order[i].productList[j].name));
+                var productQuantity = document.createElement("li");
+                productQuantity.appendChild(document.createTextNode("x " + orderContent.order[i].productList[j].quantity));
+                productBlock.appendChild(productName);
+                productBlock.appendChild(productQuantity);
+                tableProductItem.appendChild(productBlock);
+            }
+            tableTotalTitle.appendChild(document.createTextNode("Tổng : "));
+            tableTotalDetail.appendChild(document.createTextNode(" " + orderContent.order[i].tableTotal + "k"));
+            payBtn.appendChild(document.createTextNode("Thanh toán"));
+            payBtn.setAttribute("onclick", "solveOrder('" + orderContent.order[i].tableId + "')");
+            tableTotal.appendChild(tableTotalTitle);
+            tableTotal.appendChild(tableTotalDetail);
+            tableTotal.appendChild(payBtn);
+        }
+        tableName.appendChild(document.createTextNode("Bàn " + orderContent.order[i].tableId));
+        tableItem.appendChild(tableName);
+        tableItem.appendChild(tableProductItem);
+        tableItem.appendChild(tableTotal);
+        tableItemBlock.appendChild(tableItem);
+        tableBlock.appendChild(tableItemBlock);
+        listTableBlock.insertBefore(tableBlock, listTableBlock[0]);
+    }
+}
 //link = 1 is show pay, 0 is not
 function setOrderContent(orderContent, link) {
-    debugger;
+
     var myNode = document.getElementsByClassName("order-item-block");
     var myNodeTotal = document.getElementsByClassName("order-total");
-    var myNodeSave = document.getElementsByClassName("btn-save-order");
-    var myNodePay = document.getElementsByClassName("btn-pay-order");
+//    var myNodeSave = document.getElementsByClassName("btn-save-order");
+//    var myNodePay = document.getElementsByClassName("btn-pay-order");
+    var myNodePay = document.getElementsByClassName("btn-save-block");
     if (typeof (myNode[0]) !== "undefined") {
         while (myNode[0]) {
             myNode[0].parentNode.removeChild(myNode[0]);
@@ -242,11 +268,11 @@ function setOrderContent(orderContent, link) {
             myNodeTotal[0].parentNode.removeChild(myNodeTotal[0]);
         }
     }
-    if (typeof (myNodeSave[0]) !== "undefined") {
-        while (myNodeSave[0]) {
-            myNodeSave[0].parentNode.removeChild(myNodeSave[0]);
-        }
-    }
+//    if (typeof (myNodeSave[0]) !== "undefined") {
+//        while (myNodeSave[0]) {
+//            myNodeSave[0].parentNode.removeChild(myNodeSave[0]);
+//        }
+//    }
     if (typeof (myNodePay[0]) !== "undefined") {
         while (myNodePay[0]) {
             myNodePay[0].parentNode.removeChild(myNodePay[0]);
@@ -254,35 +280,59 @@ function setOrderContent(orderContent, link) {
     }
     var orderBlock = document.createElement("div");
     orderBlock.className += "order-item-block";
-    for (var j = 0; j < orderContent.productList.length; j++) {
-        var productName = orderContent.productList[j].name;
-        var productPrice = orderContent.productList[j].price;
-        var productQuabtity = orderContent.productList[j].quantity;
-        var productItemBlock = document.createElement("ul");
-        productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productName));
-        productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productPrice));
-        productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productQuabtity));
-        orderBlock.appendChild(productItemBlock);
+    var productListLength = orderContent.productList.length;
+    if (productListLength >= 0) {
+        for (var j = 0; j < productListLength; j++) {
+            var productId = orderContent.productList[j].id;
+            var productName = orderContent.productList[j].name;
+            var productPrice = orderContent.productList[j].price;
+            var productQuabtity = orderContent.productList[j].quantity;
+            var lastChild = document.createElement("div");
+            var btnAdd = document.createElement("a");
+            btnAdd.className += "btn btn-normal btn-add";
+            btnAdd.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + productPrice + ", 1, this)");
+            var btnAddText = document.createElement("i");
+            btnAddText.className += "fa fa-plus";
+            btnAdd.appendChild(btnAddText);
+            var btnMinus = document.createElement("a");
+            btnMinus.className += "btn btn-minus";
+            btnMinus.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + (-productPrice) + ", -1, this)");
+            var btnMinusText = document.createElement("i");
+            btnMinusText.className += "fa fa-minus";
+            btnMinus.appendChild(btnMinusText);
+            lastChild.appendChild(btnAdd);
+            lastChild.appendChild(btnMinus)
+            var productItemBlock = document.createElement("ul");
+            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productName));
+            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productQuabtity));
+            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productPrice + "k"));
+            productItemBlock.appendChild(document.createElement("li")).appendChild(lastChild);
+            orderBlock.appendChild(productItemBlock);
+        }
     }
+
     var orderToalBlock = document.createElement("div");
-    orderToalBlock.appendChild(document.createTextNode(orderContent.tableTotal));
+    orderToalBlock.appendChild(document.createTextNode("Tổng : "));
     orderToalBlock.className += "order-total";
+    var orderToalDetail = document.createElement("span");
+    orderToalDetail.appendChild(document.createTextNode(orderContent.tableTotal + "k"));
+    orderToalBlock.appendChild(orderToalDetail);
     var orderSaveBlock = document.createElement("div");
     orderSaveBlock.className += "btn-save-block";
     var btnSaveOrder = document.createElement("a");
     btnSaveOrder.className += "btn btn-save-order";
     btnSaveOrder.setAttribute("onclick", "saveOrderToLocalStorage()");
-    orderSaveBlock.appendChild(btnSaveOrder);
     btnSaveOrder.appendChild(document.createTextNode("Xác nhận"));
 
     document.getElementsByClassName("order-block")[0].appendChild(orderBlock);
     if (link == 1) {
         var btnPayOrder = document.createElement("a");
-        btnPayOrder.className += "btn btn-pay-order";
+        btnPayOrder.className += "btn btn-normal btn-pay-order";
         btnPayOrder.setAttribute("onclick", "solveOrder('" + orderContent.tableId + "')");
         btnPayOrder.appendChild(document.createTextNode("Thanh toán"));
         orderSaveBlock.appendChild(btnPayOrder)
     }
+    orderSaveBlock.appendChild(btnSaveOrder);
     if (orderContent.productList.length > 0) {
         document.getElementsByClassName("order-block")[0].appendChild(orderToalBlock);
         document.getElementsByClassName("order-block")[0].appendChild(orderSaveBlock);
@@ -293,12 +343,16 @@ function setOrderContent(orderContent, link) {
 function saveOrderToLocalStorage() {
     var existTable = false;
     var orderStored = localStorage.getItem("order");
-    setOrderContent(o, 1);
+
     if (typeof (orderStored) == "undefined" || orderStored == null) {
         orderStored = {"order": []};
         orderStored.order.push(o);
+        orderStored.order.sort(function (a, b) {
+            return a.tableId - b.tableId;
+        });
         var orderStoredParsed = JSON.stringify(orderStored);
         localStorage.setItem("order", orderStoredParsed);
+
     } else {
         var orderStoredParsed = JSON.parse(orderStored);
         for (var i = 0; i < orderStoredParsed.order.length; i++) {
@@ -307,17 +361,24 @@ function saveOrderToLocalStorage() {
                 orderStoredParsed.order[i].tableTotal = o.tableTotal;
                 orderStoredParsed.order[i].productList = o.productList;
                 existTable = true;
+                orderStoredParsed.order.sort(function (a, b) {
+                    return a.tableId - b.tableId;
+                });
                 localStorage.setItem("order", JSON.stringify(orderStoredParsed));
                 break;
-
             }
         }
         if (existTable == false) {
             orderStoredParsed.order.push(o);
+            orderStoredParsed.order.sort(function (a, b) {
+                return a.tableId - b.tableId;
+            });
             localStorage.setItem("order", JSON.stringify(orderStoredParsed));
         }
     }
-    o = {};
+    setOrderContent(o, 1);
+    setTableList();
+
 }
 function solveOrder(tableId) {
     var orderStored = localStorage.getItem("order");
@@ -329,6 +390,7 @@ function solveOrder(tableId) {
 //           orderStoredParsed.order[i].tableStatus = "Đã Thanh toán";
 //           orderStoredParsed.order[i].tableTotal = "0";
 //           orderStoredParsed.order[i].productList = [];
+
             break;
         }
     }
@@ -341,19 +403,48 @@ function solveOrder(tableId) {
                         orderStoredParsed.order[i].tableStatus = "Đã Thanh toán";
                         orderStoredParsed.order[i].tableTotal = 0;
                         orderStoredParsed.order[i].productList = [];
-                         localStorage.setItem("order", JSON.stringify(orderStoredParsed));
-                         setOrderContent(orderStoredParsed.order[i], 1);
+                        localStorage.setItem("order", JSON.stringify(orderStoredParsed));
+                        setOrderContent(orderStoredParsed.order[i], 1);
                         break;
                     }
                 }
-            }else{
-                 document.getElementById("demo").innerHTML = this.responseText;
+                var myNodePay = document.getElementsByClassName("table-management-item");
+                if (typeof (myNodePay[0]) !== "undefined") {
+                    while (myNodePay[0]) {
+                        myNodePay[0].parentNode.removeChild(myNodePay[0]);
+                    }
+                }
+                setTableList();
+                var el = document.getElementById("MenuModal");
+                if (hasClass(el, 'show')) {
+                    removeClass(el, 'show');
+                }
+            } else {
+                openModal("announceModal", "Thanh toán thất bại");
             }
-           
+
         }
     };
-    xhttp.open("POST", "/coffeeShopManagement/solveOrderServlet");
+    xhttp.open("POST", "/coffeeShopManagement/SolveOrderServlet");
     xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
     xhttp.send("order=" + JSON.stringify(tableInformation));
 
+}
+function addNewTable() {
+    var orderStored = localStorage.getItem("order");
+    if (typeof (orderStored) == "undefined" || orderStored == null) {
+        var newTable = {"order": []};
+        addNewTableToOrder(1, 0, newTable.order);
+        localStorage.setItem("order", JSON.stringify(newTable));
+    } else {
+        var orderStoredParsed = JSON.parse(orderStored);
+
+        var newTableId = orderStoredParsed.order[orderStoredParsed.order.length - 1].tableId + 1;
+        addNewTableToOrder(newTableId, 0, orderStoredParsed.order);
+        orderStoredParsed.order.sort(function (a, b) {
+            return a.tableId - b.tableId;
+        });
+        localStorage.setItem("order", JSON.stringify(orderStoredParsed));
+    }
+    setTableList();
 }

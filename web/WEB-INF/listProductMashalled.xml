@@ -62,10 +62,26 @@
         <product>
             <id>5</id>
             <name>Yogust đào</name>
+            <productItem>
+                <price>20.0</price>
+                <competitorName>Dù Vàng</competitorName>
+            </productItem>
+            <productItem>
+                <price>22.0</price>
+                <competitorName>Uni Space</competitorName>
+            </productItem>
         </product>
         <product>
             <id>6</id>
             <name>Yogust xoài</name>
+            <productItem>
+                <price>20.0</price>
+                <competitorName>Uni Space</competitorName>
+            </productItem>
+            <productItem>
+                <price>22.0</price>
+                <competitorName>Dù Vàng</competitorName>
+            </productItem>
         </product>
     </category>
 </ns2:listCategory>

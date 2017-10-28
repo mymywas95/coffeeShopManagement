@@ -44,6 +44,11 @@ public class GetMenuServlet extends HttpServlet {
             menuService = new MenuService();
             List<MenuDTO> listmMenuDTO = menuService.getAllMenuItem();
             request.setAttribute("ListAllMenuItem", listmMenuDTO);
+            String message = "fail";
+            if (listmMenuDTO != null) {
+                message = "success";
+            }
+            out.write(message);
             RequestDispatcher rd = request.getRequestDispatcher(ManageConstantService.menuPage);
             rd.forward(request, response);
         } catch (Exception e) {

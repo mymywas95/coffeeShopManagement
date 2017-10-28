@@ -49,9 +49,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import jaxb.listorders.ListOrders;
-import jaxb.listorders.Order;
-import jaxb.listorders.OrderItem;
+import jaxb.orders.ListBillItemDTO;
+import jaxb.orders.OrderItem;
+import jaxb.orders.Orders;
 import org.json.JSONObject;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -65,6 +65,7 @@ public class OrderService implements Serializable {
 
     private BillDAO billDAO;
     private BillItemDAO billItemDAO;
+
     public Boolean createNewBill(OrderDTO orderDTO) {
         billDAO = new BillDAO();
         billItemDAO = new BillItemDAO();
@@ -81,7 +82,7 @@ public class OrderService implements Serializable {
                 }
             }
         } else {
-             return insertOrderItemNodebyStax(orderDTO);
+            return insertOrderItemNodebyStax(orderDTO);
         }
         return true;
     }
@@ -123,7 +124,8 @@ public class OrderService implements Serializable {
             SimpleDateFormat sm = new SimpleDateFormat("mm-dd-yyyy");
             String strDate = sm.format(myDate);
             java.util.Date dt = sm.parse(strDate);
-            orderDTO.setTableName(jo.getString("tableId"));
+            int tableName = jo.getInt("tableId");
+            orderDTO.setTableName(tableName + "");
             orderDTO.setTotal(jo.getInt("tableTotal"));
             orderDTO.setPaymentDate(dt);
             orderDTO.setNote("");
@@ -153,56 +155,59 @@ public class OrderService implements Serializable {
         XMLEventWriter writer = null;
         try {
             File f = new File(ManageConstantService.orderUnSavedFilePath);
+            OrderItem orderItem = convertDTOtoJaxbItem(orderDTO);
+            Orders orders = new Orders();
+            orders.getOrderItem().add(orderItem);
+
             if (!f.exists()) {
-                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+                JAXBContext jaxb = JAXBContext.newInstance(Orders.class);
+                Unmarshaller unmarshall = jaxb.createUnmarshaller();
+                Marshaller marshall = jaxb.createMarshaller();
+                marshall.setProperty(Marshaller.JAXB_FRAGMENT, true);
+                marshall.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                marshall.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+                QName qName = new QName("jaxb.orders", "orders");
+                JAXBElement<Orders> root = new JAXBElement<>(qName, Orders.class, orders);
+                marshall.marshal(root, new FileOutputStream(ManageConstantService.orderUnSavedFilePath));
+                return true;
+            } else {
+                XMLInputFactory xif = XMLInputFactory.newInstance();
+                is = new FileInputStream(ManageConstantService.orderUnSavedFilePath);
+                reader = xif.createXMLEventReader(is);
+                XMLOutputFactory xof = XMLOutputFactory.newInstance();
+                os = new FileOutputStream(ManageConstantService.orderUnSavedFilePath + ".new");
+                writer = xof.createXMLEventWriter(os);
+                JAXBContext jaxb = JAXBContext.newInstance(OrderItem.class);
+                Unmarshaller unmarshall = jaxb.createUnmarshaller();
+                Marshaller marshall = jaxb.createMarshaller();
+                marshall.setProperty(Marshaller.JAXB_FRAGMENT, true);
+                marshall.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                marshall.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+//                QName qName = new QName("orderItem");
+//                JAXBElement<OrderItem> root = new JAXBElement<>(qName, OrderItem.class, orderItem);
+                while (reader.hasNext()) {
 
-                // root elements
-                Document doc = docBuilder.newDocument();
-                Element rootElement = doc.createElement("orders");
-                doc.appendChild(rootElement);
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                Transformer transformer = transformerFactory.newTransformer();
-                DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult(new File(ManageConstantService.orderUnSavedFilePath));
-                transformer.transform(source, result);
-
-            }
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            is = new FileInputStream(ManageConstantService.orderUnSavedFilePath);
-            reader = xif.createXMLEventReader(is);
-            XMLOutputFactory xof = XMLOutputFactory.newInstance();
-            os = new FileOutputStream(ManageConstantService.orderUnSavedFilePath + ".new");
-            writer = xof.createXMLEventWriter(os);
-            JAXBContext jaxb = JAXBContext.newInstance(OrderDTO.class);
-            Unmarshaller unmarshall = jaxb.createUnmarshaller();
-            Marshaller marshall = jaxb.createMarshaller();
-            marshall.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            marshall.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            QName qName = new QName("jaxb.orderItem", "orderItem");
-            JAXBElement<OrderDTO> root = new JAXBElement<>(qName, OrderDTO.class, orderDTO);
-
-            while (reader.hasNext()) {
-
-                if (reader.peek().isEndElement() && reader.peek().asEndElement().getName().getLocalPart().equals("orders")) {
-                    marshall.marshal(root, writer);
-                    writer.add(reader.nextEvent());
-                } else {
+                    if (reader.peek().isEndElement() && reader.peek().asEndElement().getName().getLocalPart().equals("orders")) {
+                        marshall.marshal(orderItem, writer);
+                        writer.add(reader.nextEvent());
+                    } else {
 //                    marshall.marshal(OrderDTO, writer);
-                    writer.add(reader.nextEvent());
-                }
+                        writer.add(reader.nextEvent());
+                    }
 
+                }
+                writer.flush();
+                writer.close();
+                is.close();
+                os.close();
+                File file = new File(ManageConstantService.orderUnSavedFilePath);
+                file.delete();
+                file = null;
+                file = new File(ManageConstantService.orderUnSavedFilePath + ".new");
+                file.renameTo(new File(ManageConstantService.orderUnSavedFilePath));
+                return true;
             }
-            writer.flush();
-            writer.close();
-            is.close();
-            os.close();
-            File file = new File(ManageConstantService.orderUnSavedFilePath);
-            file.delete();
-            file = null;
-            file = new File(ManageConstantService.orderUnSavedFilePath + ".new");
-            file.renameTo(new File(ManageConstantService.orderUnSavedFilePath));
-            return true;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -238,34 +243,50 @@ public class OrderService implements Serializable {
         }
     }
 
-    public JAXBContext marshalOrderToXMl(OrderDTO orderDTO, String filePath) {
-        ListOrders listOrders = new ListOrders();
-        Order order = new Order();
-        order.setNote(orderDTO.getNote());
-        order.setPaymentDate(orderDTO.getPaymentDate().toString());
-        order.setPromotion(new BigInteger(orderDTO.getPromotion() + ""));
-        order.setTableName(orderDTO.getTableName());
-        order.setTotal(new BigDecimal(orderDTO.getTotal() + ""));
-        for (BillItemDTO billItemDTO : orderDTO.getListBillItemDTO()) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setBillId(new BigInteger(billItemDTO.getBillId() + ""));
-            orderItem.setProductId(new BigInteger(billItemDTO.getProductId() + ""));
-            orderItem.setQuantity(new BigInteger(billItemDTO.getQuantity() + ""));
-            order.getOrderItem().add(orderItem);
-        }
-        listOrders.getOrder().add(order);
-        try {
-            JAXBContext contextObj = JAXBContext.newInstance(ListOrders.class);
+//    public JAXBContext marshalOrderToXMl(OrderDTO orderDTO, String filePath) {
+//        ListOrders listOrders = new ListOrders();
+//        Order order = new Order();
+//        order.setNote(orderDTO.getNote());
+//        order.setPaymentDate(orderDTO.getPaymentDate().toString());
+//        order.setPromotion(new BigInteger(orderDTO.getPromotion() + ""));
+//        order.setTableName(orderDTO.getTableName());
+//        order.setTotal(new BigDecimal(orderDTO.getTotal() + ""));
+//        for (BillItemDTO billItemDTO : orderDTO.getListBillItemDTO()) {
+//            OrderItem orderItem = new OrderItem();
+//            orderItem.setBillId(new BigInteger(billItemDTO.getBillId() + ""));
+//            orderItem.setProductId(new BigInteger(billItemDTO.getProductId() + ""));
+//            orderItem.setQuantity(new BigInteger(billItemDTO.getQuantity() + ""));
+//            order.getOrderItem().add(orderItem);
+//        }
+//        listOrders.getOrder().add(order);
+//        try {
+//            JAXBContext contextObj = JAXBContext.newInstance(ListOrders.class);
 //            Marshaller marshallerObj = contextObj.createMarshaller();
 //            marshallerObj.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 //            marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 //            QName qName = new QName("jaxb.listorders", "listOrders");
 //            JAXBElement<ListOrders> root = new JAXBElement<>(qName, ListOrders.class, listOrders);
 //            marshallerObj.marshal(root, new FileOutputStream(filePath));
-            return contextObj;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+//            return contextObj;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+    public OrderItem convertDTOtoJaxbItem(OrderDTO orderDTO) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setNote(orderDTO.getNote());
+        orderItem.setPaymentDate(orderDTO.getPaymentDate() + "");
+        orderItem.setPromotion(new BigInteger(orderDTO.getPromotion() + ""));
+        orderItem.setTableName(new BigInteger(orderDTO.getTableName()));
+        orderItem.setTotal(new BigDecimal(orderDTO.getTotal()));
+        for (BillItemDTO billItemDTO : orderDTO.getListBillItemDTO()) {
+            ListBillItemDTO listBillItemDTO = new ListBillItemDTO();
+            listBillItemDTO.setBillId(new BigInteger(billItemDTO.getBillId() + ""));
+            listBillItemDTO.setProductId(new BigInteger(billItemDTO.getProductId() + ""));
+            listBillItemDTO.setQuantity(new BigInteger(billItemDTO.getQuantity() + ""));
+            orderItem.getListBillItemDTO().add(listBillItemDTO);
         }
+        return orderItem;
     }
 }
