@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -106,10 +107,11 @@ public class OrderService implements Serializable {
         return billItem;
     }
 
-    public Date convertDateToSQLDate(java.util.Date date) {
-        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+    public Date convertDateToSQLDate(String date) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            java.sql.Date sql = new java.sql.Date(date.getTime());
+            java.util.Date parsed = df.parse(date);
+            java.sql.Date sql = new java.sql.Date(parsed.getTime());
             return sql;
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,34 +120,27 @@ public class OrderService implements Serializable {
     }
 
     public OrderDTO convertJsonToDTO(JSONObject jo) {
-        try {
-            OrderDTO orderDTO = new OrderDTO();
-            java.util.Date myDate = new java.util.Date();
-            SimpleDateFormat sm = new SimpleDateFormat("mm-dd-yyyy");
-            String strDate = sm.format(myDate);
-            java.util.Date dt = sm.parse(strDate);
-            int tableName = jo.getInt("tableId");
-            orderDTO.setTableName(tableName + "");
-            orderDTO.setTotal(jo.getInt("tableTotal"));
-            orderDTO.setPaymentDate(dt);
-            orderDTO.setNote("");
-            orderDTO.setPromotion(0);
-
-            List<BillItemDTO> listBillItemDTO = new ArrayList<BillItemDTO>();
-            for (int i = 0; i < jo.getJSONArray("productList").length(); i++) {
-                BillItemDTO billItemDTO = new BillItemDTO();
-                JSONObject productList = jo.getJSONArray("productList").getJSONObject(i);
-                billItemDTO.setBillId(0);
-                billItemDTO.setProductId(productList.getInt("id"));
-                billItemDTO.setQuantity(productList.getInt("quantity"));
-                listBillItemDTO.add(billItemDTO);
-            }
-            orderDTO.setListBillItemDTO(listBillItemDTO);
-            return orderDTO;
-        } catch (ParseException ex) {
-            Logger.getLogger(OrderService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        OrderDTO orderDTO = new OrderDTO();
+        java.util.Date myDate = new java.util.Date();
+        SimpleDateFormat sm = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String strDate = sm.format(myDate);
+        int tableName = jo.getInt("tableId");
+        orderDTO.setTableName(tableName + "");
+        orderDTO.setTotal(jo.getInt("tableTotal"));
+        orderDTO.setPaymentDate(strDate);
+        orderDTO.setNote("");
+        orderDTO.setPromotion(0);
+        List<BillItemDTO> listBillItemDTO = new ArrayList<BillItemDTO>();
+        for (int i = 0; i < jo.getJSONArray("productList").length(); i++) {
+            BillItemDTO billItemDTO = new BillItemDTO();
+            JSONObject productList = jo.getJSONArray("productList").getJSONObject(i);
+            billItemDTO.setBillId(0);
+            billItemDTO.setProductId(productList.getInt("id"));
+            billItemDTO.setQuantity(productList.getInt("quantity"));
+            listBillItemDTO.add(billItemDTO);
         }
+        orderDTO.setListBillItemDTO(listBillItemDTO);
+        return orderDTO;
     }
 
     public Boolean insertOrderItemNodebyStax(OrderDTO orderDTO) {

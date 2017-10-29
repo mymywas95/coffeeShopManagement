@@ -11,8 +11,13 @@ package service;
  */
 public class ManageConstantService {
 
+    public static final String realPath = "E:/FPT/XML/project_xml/coffeeShopManagement/web";
     public static final String listProductMashalled = "E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/listProductMashalled.xml";
     public static final String orderUnSavedFilePath = "E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/orderUnSavedFilePath.xml";
+    public static final String menuFOXsl = "E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/menuFO.xsl";
+    public static final String menuFO = "E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/menuFO.fo";
+    public static final String configFile = "E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/config.xml";
+    public static final String menuFile = "E:/FPT/XML/project_xml/coffeeShopManagement/web/WEB-INF/menuXML.xml";
     public static final String indexPage = "index.jsp";
     public static final String menuPage = "menu.jsp";
     public static final String maintenancePage = "maintenancePage.jsp";

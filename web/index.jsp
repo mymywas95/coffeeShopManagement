@@ -44,7 +44,11 @@
                         <a class="btn" onclick="addNewTable()">Thêm bàn</a>
                     </div>
                      <div class="action-btn-item">
-                        <a class="btn" href="/coffeeShopManagement/GetMenuServlet">In menu</a>
+                         <a class="btn" onclick="getStatisticInThisMonth()">Thống kê doanh thu theo ngày</a>
+                    </div>
+                     <div class="action-btn-item">
+                         <!--<a class="btn" onclick="printMenu()">In menu</a>-->
+                         <a class="btn" target="_blank" href="/coffeeShopManagement/PrintMenuServlet">In menu</a>
                     </div>
                     <div class="action-btn-item">
                         <a class="btn" href="/coffeeShopManagement/GetMenuServlet">Cập nhập menu</a>
@@ -121,3 +125,27 @@
         </div>
     </div>
 </div>
+<div id="statictis" class="modal" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-item">
+                    <div class="modal-header-title">
+                        Thống kê doanh thu từ <span id="statictis-start"></span> đến <span id="statictis-end"></span>
+                    </div>
+                </div>
+                <div class="modal-header-item">
+                    <div class="modal-header-btn-close">
+                        <a class="btn btn-danger" onclick="openModal('statictis', '')"><i class="fa fa-times"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="statictis-content" id="statictisContent">
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -30,4 +30,14 @@
 		</bindings>
 		<catalog/>
 	</schema>
+	<schema type='-xmlschema' package='jaxb.menu' name='menu'>
+		<xjc-options>
+		</xjc-options>
+		<schema-sources>
+			<schema-source location='src/conf/xml-resources/jaxb/menu/menuSchema.xsd' origLocation='web/WEB-INF/menuSchema.xsd'/>
+		</schema-sources>
+		<bindings>
+		</bindings>
+		<catalog/>
+	</schema>
 </schemas>

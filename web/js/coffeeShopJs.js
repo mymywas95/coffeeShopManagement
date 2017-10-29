@@ -448,3 +448,116 @@ function addNewTable() {
     }
     setTableList();
 }
+function printMenu() {
+    var menuStored = localStorage.getItem("myMenu");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+//            if (this.responseText == "success") {
+//                console.log("success");
+//            } else {
+//                openModal("announceModal", "In menu thất bại");
+//            }
+
+        }
+    };
+    xhttp.open("POST", "/coffeeShopManagement/PrintMenuServlet");
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    xhttp.send("menu=" + menuStored);
+}
+function getStatisticInThisMonth() {
+    var fromDate = getFromDate();
+    var endDate = getEndDate();
+    var dateRange = {"fromDate": fromDate, "endDate": endDate};
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText == "fail") {
+                openModal("announceModal", "Thống kê thất bại");
+            } else {
+                var statictisContent = document.getElementsByClassName("statictis-tbl");
+                if (typeof (statictisContent[0]) !== "undefined") {
+                    while (statictisContent[0]) {
+                        statictisContent[0].parentNode.removeChild(statictisContent[0]);
+                    }
+                }
+                document.getElementById("statictis-start").innerHTML = fromDate;
+                document.getElementById("statictis-end").innerHTML = endDate;
+                var statisticRs = JSON.parse(this.responseText);
+                var table = document.createElement("table");
+                table.className += "statictis-tbl";
+                var tableHeader = document.createElement("thead");
+                var tableHeaderRow = document.createElement("tr");
+                var tableBody = document.createElement("tbody");
+                var tableBodyRow = document.createElement("tr");
+                for (var i = 0; i < statisticRs.statictis.length; i++) {
+                    var tableHeaderTh = document.createElement("th");
+                    tableHeaderTh.appendChild(document.createTextNode(statisticRs.statictis[i].date));
+                    tableHeaderRow.appendChild(tableHeaderTh);
+                }
+                tableHeader.appendChild(tableHeaderRow);
+                table.appendChild(tableHeader);
+                for (var i = 0; i < statisticRs.statictis.length; i++) {
+                    var tableBodyTd = document.createElement("td");
+                    tableBodyTd.appendChild(document.createTextNode(statisticRs.statictis[i].total + "k"));
+                    tableBodyRow.appendChild(tableBodyTd);
+                }
+                tableBody.appendChild(tableBodyRow);
+                table.appendChild(tableBody);
+                document.getElementById("statictisContent").appendChild(table);
+                var el = document.getElementById("statictis");
+                if (hasClass(el, 'show')) {
+                    removeClass(el, 'show');
+                } else {
+                    addClass(el, 'show');
+                }
+            }
+
+        }
+    };
+    xhttp.open("POST", "/coffeeShopManagement/StatisticServlet");
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    xhttp.send("dateRange=" + JSON.stringify(dateRange));
+}
+function getFromDate() {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    var today = yyyy + '-' + mm + '-' + '01';
+    return today;
+}
+function getEndDate() {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    if (mm == '04' || mm == '06' || mm == '09' || mm == '11') {
+        var today = yyyy + '-' + mm + '-' + '30';
+    } else {
+        if (mm == '02') {
+            if (yyyy % 4 == 0 && yyyy % 100 != 0) {
+                var today = yyyy + '-' + mm + '-' + '29';
+            } else {
+                var today = yyyy + '-' + mm + '-' + '28';
+            }
+        } else {
+            var today = yyyy + '-' + mm + '-' + '31';
+        }
+    }
+    return today;
+}

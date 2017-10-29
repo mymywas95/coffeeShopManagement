@@ -82,29 +82,22 @@ public class IndexService implements Serializable {
     }
 
     public OrderDTO convertJaxbToDto(OrderItem orderItem) {
-        try {
-            OrderDTO orderDTO = new OrderDTO();
-            orderDTO.setNote(orderItem.getNote());
-            String date = orderItem.getPaymentDate();
-            SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.getDefault());
-            Date parsedDate = sdf.parse(date);
-            orderDTO.setPaymentDate(parsedDate);
-            orderDTO.setPromotion(Integer.parseInt(orderItem.getPromotion() + ""));
-            orderDTO.setTableName(orderItem.getTableName() + "");
-            orderDTO.setTotal(Integer.parseInt(orderItem.getTotal() + ""));
-            List<BillItemDTO> billItemDTOs = new ArrayList<BillItemDTO>();
-            for (ListBillItemDTO listBillItemDTO : orderItem.getListBillItemDTO()) {
-                BillItemDTO billItemDTO = new BillItemDTO();
-                billItemDTO.setBillId(Integer.parseInt(listBillItemDTO.getBillId() + ""));
-                billItemDTO.setProductId(Integer.parseInt(listBillItemDTO.getProductId() + ""));
-                billItemDTO.setQuantity(Integer.parseInt(listBillItemDTO.getQuantity() + ""));
-                billItemDTOs.add(billItemDTO);
-            }
-            orderDTO.setListBillItemDTO(billItemDTOs);
-            return orderDTO;
-        } catch (ParseException ex) {
-            Logger.getLogger(IndexService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setNote(orderItem.getNote());
+        String date = orderItem.getPaymentDate();
+        orderDTO.setPaymentDate(date);
+        orderDTO.setPromotion(Integer.parseInt(orderItem.getPromotion() + ""));
+        orderDTO.setTableName(orderItem.getTableName() + "");
+        orderDTO.setTotal(Integer.parseInt(orderItem.getTotal() + ""));
+        List<BillItemDTO> billItemDTOs = new ArrayList<BillItemDTO>();
+        for (ListBillItemDTO listBillItemDTO : orderItem.getListBillItemDTO()) {
+            BillItemDTO billItemDTO = new BillItemDTO();
+            billItemDTO.setBillId(Integer.parseInt(listBillItemDTO.getBillId() + ""));
+            billItemDTO.setProductId(Integer.parseInt(listBillItemDTO.getProductId() + ""));
+            billItemDTO.setQuantity(Integer.parseInt(listBillItemDTO.getQuantity() + ""));
+            billItemDTOs.add(billItemDTO);
         }
+        orderDTO.setListBillItemDTO(billItemDTOs);
+        return orderDTO;
     }
 }

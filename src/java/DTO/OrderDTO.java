@@ -15,7 +15,7 @@ import java.util.List;
 public class OrderDTO {
 
     private String tableName;
-    private Date paymentDate;
+    private String paymentDate;
     private float total;
     private String note;
     private int promotion;
@@ -32,11 +32,11 @@ public class OrderDTO {
         this.tableName = tableName;
     }
 
-    public Date getPaymentDate() {
+    public String getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(String paymentDate) {
         this.paymentDate = paymentDate;
     }
 
@@ -71,5 +71,6 @@ public class OrderDTO {
     public void setListBillItemDTO(List<BillItemDTO> listBillItemDTO) {
         this.listBillItemDTO = listBillItemDTO;
     }
+    
     
 }
