@@ -41,19 +41,21 @@
             <div class="group-action-btn">
                 <div class="action-btn-block">
                     <div class="action-btn-item">
+                        <a class="btn" onclick="getStatisticInThisMonth()">Thống kê doanh thu theo ngày</a>
+                    </div>
+                    <div class="action-btn-item">
+                        <!--<a class="btn" onclick="printMenu()">In menu</a>-->
+                        <a class="btn" target="_blank" href="/coffeeShopManagement/PrintMenuServlet">In menu</a>
+                    </div>
+                    <div class="action-btn-item">
                         <a class="btn" onclick="addNewTable()">Thêm bàn</a>
-                    </div>
-                     <div class="action-btn-item">
-                         <a class="btn" onclick="getStatisticInThisMonth()">Thống kê doanh thu theo ngày</a>
-                    </div>
-                     <div class="action-btn-item">
-                         <!--<a class="btn" onclick="printMenu()">In menu</a>-->
-                         <a class="btn" target="_blank" href="/coffeeShopManagement/PrintMenuServlet">In menu</a>
                     </div>
                     <div class="action-btn-item">
                         <a class="btn" href="/coffeeShopManagement/GetMenuServlet">Cập nhập menu</a>
                     </div>
-                   
+                    <div class="action-btn-item">
+                        <a class="btn" onclick="getDataCompetitor('duvang')">Du vang</a>
+                    </div>
 
                 </div>
             </div>
@@ -96,7 +98,6 @@
                             <li>Thao tác</li>
                         </ul>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -142,7 +143,7 @@
             </div>
             <div class="modal-body">
                 <div class="statictis-content" id="statictisContent">
-                  
+
                 </div>
             </div>
         </div>

@@ -39,4 +39,43 @@
             <price>30</price>
         </product>
     </category>
+     <category>
+        <name>Cà phê 1</name>
+        <product>
+            <id>1</id>
+            <name>Cà phê đen đá</name>
+            <price>16</price>
+        </product>
+        <product>
+            <id>2</id>
+            <name>Cà phê đen nóng</name>
+            <price>20</price>
+        </product>
+    </category>
+     <category>
+        <name>Cà phê 2</name>
+        <product>
+            <id>1</id>
+            <name>Cà phê đen đá</name>
+            <price>16</price>
+        </product>
+        <product>
+            <id>2</id>
+            <name>Cà phê đen nóng</name>
+            <price>20</price>
+        </product>
+    </category>
+     <category>
+        <name>Cà phê 3</name>
+        <product>
+            <id>1</id>
+            <name>Cà phê đen đá</name>
+            <price>16</price>
+        </product>
+        <product>
+            <id>2</id>
+            <name>Cà phê đen nóng</name>
+            <price>20</price>
+        </product>
+    </category>
 </menu>

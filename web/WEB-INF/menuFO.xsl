@@ -31,36 +31,25 @@
                     </fo:block>
                 </fo:static-content>
                 <fo:flow flow-name="xsl-region-body">
-                  
-                    <fo:list-block>
-                        <xsl:for-each select="p:menu/p:category">
-                            <fo:list-item float="right">
-                                <fo:list-item-label>
-                                    <fo:block></fo:block>
-                                </fo:list-item-label>
-                                <fo:list-item-body>
-                                    <fo:block> 
-                                        <xsl:value-of select="p:name"/>
-                                    </fo:block>
-                                    <fo:block>
-                                        <fo:list-block>
-                                            <xsl:for-each select="p:product">
-                                                <fo:list-item>
-                                                    <fo:list-item-label>
-                                                        <fo:block>*</fo:block>
-                                                    </fo:list-item-label>
-                                                    <fo:list-item-body>
-                                                        <fo:block>Volvo</fo:block>
-                                                    </fo:list-item-body>
-                                                </fo:list-item>
-                                            </xsl:for-each>
-                                        </fo:list-block>
-                                       
-                                    </fo:block>
-                                </fo:list-item-body>
-                            </fo:list-item>
-                        </xsl:for-each>
-                    </fo:list-block>
+                    <xsl:for-each select="p:menu/p:category"> 
+                        <!--                        <xsl:variable name="index" select="position() -1">-->
+                        <fo:block>
+                            <xsl:variable name="index" select="(position() - 1)"/>
+                            <xsl:value-of select="$index" />
+                        </fo:block>
+                          
+                        <!--                        <xsl:if test="((position() % 3)= = 0">
+                            <fo:block>
+                              ended<xsl:value-of select="position()"/>
+                            </fo:block>
+                        </xsl:if>-->
+                        <!--                        <xsl:if test="(position() - 1) % 3 = 0">
+                            <fo:block>
+                               start<xsl:value-of select="position()"/>
+                            </fo:block>
+                        </xsl:if>-->
+                       
+                    </xsl:for-each>
                 </fo:flow>
             </fo:page-sequence>
         </fo:root>

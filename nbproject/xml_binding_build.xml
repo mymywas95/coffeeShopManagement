@@ -67,6 +67,20 @@
         <copy todir="${build.generated.sources.dir}/jaxb">
             <fileset dir="build/generated/jaxbCache/menu"/>
         </copy>
+        <mkdir dir="build/generated/jaxbCache/productsparsed"/>
+        <xjc package="jaxb.productsparsed" destdir="build/generated/jaxbCache/productsparsed" catalog="catalog.xml">
+            <classpath>
+                <pathelement location="${src.dir}"/>
+                <pathelement path="${jaxbwiz.xjcrun.classpath}"/>
+            </classpath>
+            <arg value="-xmlschema"/>
+            <schema file="src/conf/xml-resources/jaxb/productsparsed/listproductparse.xsd"/>
+            <depends file="src/conf/xml-resources/jaxb/productsparsed/listproductparse.xsd"/>
+            <produces dir="build/generated/jaxbCache/productsparsed"/>
+        </xjc>
+        <copy todir="${build.generated.sources.dir}/jaxb">
+            <fileset dir="build/generated/jaxbCache/productsparsed"/>
+        </copy>
         <!--*** Web project javac macro does not support sourcepath attribute, so do not pass "sourcepath=${src.dir}"-->
     </target>
 </project>

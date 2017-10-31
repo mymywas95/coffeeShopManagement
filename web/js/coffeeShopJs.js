@@ -4,6 +4,7 @@ var s = {
 var o = {};
 function onloadFunction() {
     var menuStored = localStorage.getItem("myMenu");
+    setMenuContent();
     if (typeof (menuStored) == "undefined" || menuStored == null) {
         window.location.replace("http://localhost:8084/coffeeShopManagement/GetMenuServlet");
     } else {
@@ -11,9 +12,9 @@ function onloadFunction() {
         if (typeof (orderStored) == "undefined" || orderStored == null) {
             addNewTable();
         } else {
-            setMenuContent();
             setTableList();
         }
+
     }
 }
 
@@ -156,14 +157,20 @@ function setMenuContent() {
             var productItemBlock = document.createElement("ul");
             var productPriceSplited = productPrice.split(".");
             var productPriceFormated = productPriceSplited[0] + "k";
-            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productName));
-            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productPriceFormated));
+            var productItemNameBlock = document.createElement("li");
+            productItemNameBlock.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + productPrice + ", 1, this)");
+            productItemBlock.appendChild(productItemNameBlock).appendChild(document.createTextNode(productName));
+            var productItemPriceBlock = document.createElement("li");
+            productItemPriceBlock.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + productPrice + ", 1, this)");
+            productItemBlock.appendChild(productItemPriceBlock).appendChild(document.createTextNode(productPriceFormated));
+//            productItemBlock.appendChild(document.createElement("li")).appendChild(document.createTextNode(productPriceFormated));
             var lastChild = document.createElement("li");
             var btnAdd = document.createElement("a");
             btnAdd.className += "btn btn-normal btn-add";
             btnAdd.setAttribute("onclick", "ChangeTableItem(" + productId + ",'" + productName + "'," + productPrice + ", 1, this)");
-            var btnAddText = document.createElement("i");
-            btnAddText.className += "fa fa-plus";
+//            var btnAddText = document.createElement("i");
+//            btnAddText.className += "fa fa-plus";
+            var btnAddText = document.createTextNode("chọn");
             btnAdd.appendChild(btnAddText);
             lastChild.appendChild(btnAdd);
 
@@ -330,11 +337,11 @@ function setOrderContent(orderContent, link) {
         btnPayOrder.className += "btn btn-normal btn-pay-order";
         btnPayOrder.setAttribute("onclick", "solveOrder('" + orderContent.tableId + "')");
         btnPayOrder.appendChild(document.createTextNode("Thanh toán"));
-        orderSaveBlock.appendChild(btnPayOrder)
+//        orderSaveBlock.appendChild(btnPayOrder);
     }
     orderSaveBlock.appendChild(btnSaveOrder);
     if (orderContent.productList.length > 0) {
-        document.getElementsByClassName("order-block")[0].appendChild(orderToalBlock);
+//        document.getElementsByClassName("order-block")[0].appendChild(orderToalBlock);
         document.getElementsByClassName("order-block")[0].appendChild(orderSaveBlock);
     }
 
@@ -378,6 +385,10 @@ function saveOrderToLocalStorage() {
     }
     setOrderContent(o, 1);
     setTableList();
+    var el = document.getElementById("MenuModal");
+    if (hasClass(el, 'show')) {
+        removeClass(el, 'show');
+    }
 
 }
 function solveOrder(tableId) {
@@ -405,6 +416,10 @@ function solveOrder(tableId) {
                         orderStoredParsed.order[i].productList = [];
                         localStorage.setItem("order", JSON.stringify(orderStoredParsed));
                         setOrderContent(orderStoredParsed.order[i], 1);
+                        var el = document.getElementById("MenuModal");
+                        if (hasClass(el, 'show')) {
+                            removeClass(el, 'show');
+                        }
                         break;
                     }
                 }
@@ -415,10 +430,6 @@ function solveOrder(tableId) {
                     }
                 }
                 setTableList();
-                var el = document.getElementById("MenuModal");
-                if (hasClass(el, 'show')) {
-                    removeClass(el, 'show');
-                }
             } else {
                 openModal("announceModal", "Thanh toán thất bại");
             }
@@ -488,21 +499,33 @@ function getStatisticInThisMonth() {
                 table.className += "statictis-tbl";
                 var tableHeader = document.createElement("thead");
                 var tableHeaderRow = document.createElement("tr");
-                var tableBody = document.createElement("tbody");
-                var tableBodyRow = document.createElement("tr");
-                for (var i = 0; i < statisticRs.statictis.length; i++) {
-                    var tableHeaderTh = document.createElement("th");
-                    tableHeaderTh.appendChild(document.createTextNode(statisticRs.statictis[i].date));
-                    tableHeaderRow.appendChild(tableHeaderTh);
-                }
+                var tableHeaderThDate = document.createElement("th");
+                tableHeaderThDate.appendChild(document.createTextNode("Ngày"));
+                var tableHeaderThTotal = document.createElement("th");
+                tableHeaderThTotal.appendChild(document.createTextNode("Tổng doanh thu"));
+                tableHeaderRow.appendChild(tableHeaderThDate);
+                tableHeaderRow.appendChild(tableHeaderThTotal);
                 tableHeader.appendChild(tableHeaderRow);
+                var tableBody = document.createElement("tbody");
+
+//                for (var i = 0; i < statisticRs.statictis.length; i++) {
+//                    var tableHeaderTh = document.createElement("th");
+//                    tableHeaderTh.appendChild(document.createTextNode(statisticRs.statictis[i].date));
+//                    tableHeaderRow.appendChild(tableHeaderTh);
+//                }
+
                 table.appendChild(tableHeader);
                 for (var i = 0; i < statisticRs.statictis.length; i++) {
-                    var tableBodyTd = document.createElement("td");
-                    tableBodyTd.appendChild(document.createTextNode(statisticRs.statictis[i].total + "k"));
-                    tableBodyRow.appendChild(tableBodyTd);
+                    var tableBodyRow = document.createElement("tr");
+                    var tableBodyTdDate = document.createElement("td");
+                    var tableBodyTdTotal = document.createElement("td");
+                    tableBodyTdDate.appendChild(document.createTextNode(statisticRs.statictis[i].date));
+                    tableBodyTdTotal.appendChild(document.createTextNode(statisticRs.statictis[i].total + "k"));
+                    tableBodyRow.appendChild(tableBodyTdDate);
+                    tableBodyRow.appendChild(tableBodyTdTotal);
+                    tableBody.appendChild(tableBodyRow);
                 }
-                tableBody.appendChild(tableBodyRow);
+
                 table.appendChild(tableBody);
                 document.getElementById("statictisContent").appendChild(table);
                 var el = document.getElementById("statictis");
@@ -560,4 +583,15 @@ function getEndDate() {
         }
     }
     return today;
+}
+function getDataCompetitor(competitorName) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+        }
+    };
+    xhttp.open("GET", "http://duvangcoffee.com/api/data.php?type=product");
+    xhttp.setRequestHeader("Content-Type", "text/html");
+    xhttp.send();
 }

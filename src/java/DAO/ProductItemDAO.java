@@ -41,4 +41,56 @@ public class ProductItemDAO implements Serializable {
         }
         return result;
     }
+
+    public int addNewProductItem(ProductItem productItem) {
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.persist(productItem);
+            em.getTransaction().commit();
+            return productItem.getId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+
+        }
+    }
+
+    public ProductItem findProductItembyProductIdAndcompetitorId(int productId, int competitorId) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Query q = em.createQuery(
+                    "SELECT p "
+                    + "FROM ProductItem p "
+                    + "WHERE p.productId = :productId and p.competitorId = :competitorId");
+            q.setParameter("productId", productId);
+            q.setParameter("competitorId", competitorId);
+            ProductItem productItem = (ProductItem) q.getSingleResult();
+            if (productItem == null) {
+                return null;
+            }
+            return productItem;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public Boolean updatePricebyId(int id, int price) {
+     EntityManager em = emf.createEntityManager();
+        try {
+            ProductItem productItem = em.find(ProductItem.class, id);
+            if (productItem != null) {
+                em.getTransaction().begin();
+                productItem.setPrice(price);
+                em.merge(productItem);
+                em.getTransaction().commit();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
+    }
 }

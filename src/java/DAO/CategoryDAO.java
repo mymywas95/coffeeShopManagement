@@ -24,17 +24,54 @@ import utils.DBUtils;
  * @author MYNVTSE61526
  */
 public class CategoryDAO implements Serializable {
-     EntityManagerFactory emf = Persistence.createEntityManagerFactory("coffeeShopManagementPU");
+
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("coffeeShopManagementPU");
+
     public List<CategoryDTO> getAllCategory() {
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery( 
-                "SELECT c " +
-                "FROM ProductCategory c "); 
-        List<ProductCategory> resEnt  = q.getResultList();
+        Query q = em.createQuery(
+                "SELECT c "
+                + "FROM ProductCategory c ");
+        List<ProductCategory> resEnt = q.getResultList();
         List<CategoryDTO> result = new ArrayList<CategoryDTO>();
-        for (ProductCategory cate: resEnt){
+        for (ProductCategory cate : resEnt) {
             result.add(new CategoryDTO(cate.getId(), cate.getName()));
         }
         return result;
+    }
+
+    public int checkExistCate(String cateName) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Query q = em.createQuery(
+                    "SELECT p "
+                    + "FROM ProductCategory p "
+                    + "Where p.name = :name");
+            q.setParameter("name", cateName);
+            ProductCategory category = (ProductCategory) q.getSingleResult();
+            if (category != null) {
+                return category.getId();
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            System.out.println("not exit category " + cateName);
+            return 0;
+        }
+
+    }
+
+    public int addNewCategory(ProductCategory productCategory) {
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.persist(productCategory);
+            em.getTransaction().commit();
+            return productCategory.getId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+
+        }
     }
 }

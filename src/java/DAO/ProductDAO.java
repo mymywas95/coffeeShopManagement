@@ -42,4 +42,38 @@ public class ProductDAO {
         }
         return result;
     }
+
+    public int checkExistProduct(String productName) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Query q = em.createQuery(
+                    "SELECT p "
+                    + "FROM Product p "
+                    + "Where p.name = :name");
+            q.setParameter("name", productName);
+            Product product = (Product) q.getSingleResult();
+            if (product != null) {
+                return product.getId();
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+              System.out.println("not exit product name " + productName);
+            return 0;
+        }
+    }
+
+    public int addNewProduct(Product product) {
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.persist(product);
+            em.getTransaction().commit();
+            return product.getId();
+        } catch (Exception e) {
+             System.out.println("fail to create " + product.getName());
+            return 0;
+
+        }
+    }
 }

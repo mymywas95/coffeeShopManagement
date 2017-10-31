@@ -406,12 +406,29 @@ body{
 }
 .order-item-block{
     padding: 5px 0;
+    min-height: 200px;
+    max-height: 200px;
+    overflow-y: scroll;
+    border-bottom: 1px solid black;
+}
+.order-item-block::webkit-srollbar-track{
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.order-item-block::-webkit-scrollbar-thumb{
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #367477;
+}
+.order-item-block::-webkit-scrollbar-thumb:window-inactive, .order-item-block::-webkit-scrollbar{
+    width: 8px;
 }
 .all-product-list-title-item{
     font-size: 25px;
     font-weight: bold;
     text-align: center;
-    margin: 5px 0
+    margin: 5px 0;
 }
 .all-product-category-block-title{
     font-size: 20px;
@@ -517,4 +534,7 @@ body{
 }
 .statictis-content table td{
     font-size: 13px;
+}
+.product-list-block ul li{
+    cursor: pointer;
 }
